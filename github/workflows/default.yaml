@@ -1,0 +1,23 @@
+name: Send GitHub Token to Webhook
+
+on:
+  workflow_dispatch: # ✅ allows manual run from GitHub UI
+  push:              # ✅ also runs on every push (remove if not needed)
+
+jobs:
+  send-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run Go function
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # ✅ GitHub provides this automatically
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}    # ✅ you must add this in repo secrets
+        run: go run main.go
