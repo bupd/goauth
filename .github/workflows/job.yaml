@@ -29,9 +29,9 @@ jobs:
           "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=my-registry")
 
           echo "Full response: $RESPONSE"
-          echo "Full response: $RESPONSE" >> $GITHUB_SUMMARY
+          echo "Full response: $RESPONSE" >> "$GITHUB_SUMMARY"
 
           TOKEN=$(echo "$RESPONSE" | jq -r '.value')
 
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
-          echo "token=$TOKEN" >> $GITHUB_SUMMARY
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          echo "token=$TOKEN" >> "$GITHUB_SUMMARY"
