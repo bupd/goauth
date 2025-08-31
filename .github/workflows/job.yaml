@@ -1,0 +1,37 @@
+name: echo OIDC token
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # 👈 required for OIDC JWT
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # - name: Build image
+      #   run: |
+      #     docker build -t myregistry.example.com/myapp:${{ github.sha }} .
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get OIDC token
+        id: oidc
+        run: |
+          echo "Requesting OIDC token"
+          RESPONSE=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=my-registry")
+
+          echo "Full response: $RESPONSE"
+          echo "Full response: $RESPONSE" >> $GITHUB_SUMMARY
+
+          TOKEN=$(echo "$RESPONSE" | jq -r '.value')
+
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          echo "token=$TOKEN" >> $GITHUB_SUMMARY
