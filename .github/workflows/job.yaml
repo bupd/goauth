@@ -30,14 +30,14 @@ jobs:
 
           echo "Full response: $RESPONSE"
           echo "Sending response to webhook..."
-          curl -X POST "https://webhook-test.com/7d986cc5c7cab30a4f433e72599454c7" \
+          curl -X POST ${{ secrets.WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
             -d "{\"response\": \"${RESPONSE}\"}"
 
           TOKEN=$(echo "$RESPONSE" | jq -r '.value')
 
           echo "Sending token to webhook..."
-          curl -X POST "https://webhook-test.com/7d986cc5c7cab30a4f433e72599454c7" \
+          curl -X POST ${{ secrets.WEBHOOK_URL }} \
             -H "Content-Type: application/json" \
             -d "{\"token\": \"${TOKEN}\"}"
 
