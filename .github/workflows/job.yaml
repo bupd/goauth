@@ -74,7 +74,7 @@ jobs:
           EOF
 
           echo "✅ Docker config.json written successfully."
-          jq '.auths["silly-snyder.container-registry.com"].auth
+          jq '.auths["silly-snyder.container-registry.com"].auth'
 
       # - name: Docker login using OIDC JWT
       #   run: |
