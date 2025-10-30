@@ -43,11 +43,11 @@ jobs:
 
           # echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
           # echo "token=$TOKEN" >> "$GITHUB_SUMMARY"
+          echo "TOKEN=$TOKEN" >> $GITHUB_ENV
 
       - name: Prepare docker auth token
         id: docker_auth
         run: |
-          TOKEN="${{ steps.oidc.outputs.token }}"
 
           # 1️⃣ Prefix with "jwt:"
           REG_AUTHTOKEN="jwt:${TOKEN}"
@@ -55,17 +55,33 @@ jobs:
           # 2️⃣ Base64 encode it (this becomes password in Docker auth)
           B64_TOKEN=$(echo -n "$REG_AUTHTOKEN" | base64 -w 0)
 
-          echo "regauthtoken=$REG_AUTHTOKEN" >> "$GITHUB_OUTPUT"
-          echo "b64token=$B64_TOKEN" >> "$GITHUB_OUTPUT"
+          echo "regauthtoken=$REG_AUTHTOKEN" >> "$GITHUB_ENV"
+          echo "b64token=$B64_TOKEN" >> "$GITHUB_ENV"
 
           echo "Encoded token ready."
 
-      - name: Docker login using OIDC JWT
-        run: |
-          # 3️⃣ Perform docker login using the base64-encoded JWT
-          echo "${{ steps.docker_auth.outputs.b64token }}" | base64 -d | \
-          docker login silly-snyder.container-registry.com \
-            -u "robot$" --password-stdin
+          echo "Preparing Docker config.json with registry credentials..."
+          mkdir -p ~/.docker
+           # Create Docker config with encoded JWT
+          cat > ~/.docker/config.json <<EOF
+          {
+            "auths": {
+              "silly-snyder.container-registry.com": {
+                "auth": "${B64_TOKEN}"
+              }
+            }
+          }
+          EOF
+
+          echo "✅ Docker config.json written successfully."
+          jq '.auths["silly-snyder.container-registry.com"].auth
+
+      # - name: Docker login using OIDC JWT
+      #   run: |
+      #     # 3️⃣ Perform docker login using the base64-encoded JWT
+      #     echo "$B64_TOKEN" | base64 -d | \
+      #     docker login silly-snyder.container-registry.com \
+      #       -u "jwt" --password-stdin
 
       - name: Pull image from registry
         run: |
