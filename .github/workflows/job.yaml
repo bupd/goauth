@@ -41,8 +41,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"token\": \"${TOKEN}\"}"
 
-          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
-          echo "token=$TOKEN" >> "$GITHUB_SUMMARY"
+          # echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+          # echo "token=$TOKEN" >> "$GITHUB_SUMMARY"
 
       - name: Prepare docker auth token
         id: docker_auth
